@@ -1,0 +1,21 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory
+        android:title="@string/pref_buddies_share"
+        android:key="pref_key_buddies_share">
+
+		<Preference android:title="@string/pref_create_qrcode"
+					android:key="pref_key_create_qrcode"
+					android:summary="@string/pref_summary_create_qrcode">
+		</Preference>
+		<Preference android:title="@string/pref_scan_qrcode"
+					android:key="pref_key_scan_qrcode"
+					android:summary="@string/pref_summary_scan_qrcode">
+		</Preference>
+	</PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_buddies"
+        android:key="pref_key_buddies">
+
+    </PreferenceCategory>
+</PreferenceScreen>

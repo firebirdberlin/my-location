@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/action_delete_selected_buddies"
+          android:icon="@drawable/ic_trash"
+          android:title="@string/action_delete_selected_buddies"
+          android:showAsAction="ifRoom"
+          android:visible="false" />
+</menu>

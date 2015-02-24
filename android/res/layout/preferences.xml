@@ -1,0 +1,27 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/pref_server_settings"
+        android:key="pref_key_server_settings">
+        <EditTextPreference
+            android:key="pref_key_server_address"
+            android:defaultValue="http://"
+            android:summary="@string/pref_summary_server_address"
+            android:title="@string/pref_title_server_address" />
+        <EditTextPreference
+            android:key="pref_key_server_password"
+            android:defaultValue=""
+            android:summary="@string/pref_summary_server_password"
+            android:title="@string/pref_title_server_password" />
+
+    </PreferenceCategory>
+  <PreferenceCategory
+        android:title="@string/pref_personal_settings"
+        android:key="pref_key_personal_settings">
+        <EditTextPreference
+            android:key="pref_key_phone_number"
+            android:summary="@string/pref_summary_phone_number"
+            android:title="@string/pref_title_phone_number" />
+
+
+    </PreferenceCategory>
+</PreferenceScreen>
