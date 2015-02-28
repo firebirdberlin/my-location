@@ -50,9 +50,14 @@ public class UploadService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		mContext = this;
+
+		if (! MCrypt.secret_key_is_valid(mContext) ||
+			SettingsActivity.getServerURL(mContext).length() == 0) {
+			stopSelf();
+		}
+
 		Bundle extras = intent.getExtras();
 		if(extras != null) {
-
 			String lat = extras.getString("lat");
 			String lon = extras.getString("lon");
 			String userid = this.getDeviceId(mContext);
