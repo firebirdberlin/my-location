@@ -6,6 +6,7 @@ package com.serpro.library.String;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -31,7 +32,7 @@ public class MCrypt {
 			mContext = context;
 			byte[] SecretKey = get_secret_key();
 
-			ivspec = new IvParameterSpec(MCrypt.hexToBytes(iv));
+			ivspec = new IvParameterSpec(iv.getBytes());
 			keyspec = new SecretKeySpec(SecretKey, "AES");
 
 			try {
@@ -81,7 +82,7 @@ public class MCrypt {
 
 		public byte[] decrypt(String code) throws Exception{
 			if(code == null || code.length() == 0)
-					throw new Exception("Empty string");
+				throw new Exception("Empty string");
 
 			byte[] decrypted = null;
 
@@ -150,21 +151,16 @@ public class MCrypt {
 
 		public static String encrypt_text(Context context, String plaintext){
 			if (MCrypt.secret_key_is_valid(context)){
-				MCrypt mcrypt = new MCrypt(context, "fedcba9876543210");
+				MCrypt mcrypt = new MCrypt(context);
 
 				try {
-					MCrypt mcrypte = new MCrypt(context);
-					String encrypted = MCrypt.bytesToHex( mcrypte.encrypt(plaintext));
-					Log.d("LongitudeUpdater.Test", encrypted);
-					MCrypt mcrypt2 = new MCrypt(context, mcrypte.get_iv());
-					String decrypted = new String(mcrypt2.decrypt(encrypted));
-					Log.d("LongitudeUpdater.Test", decrypted);
-
-
-					return MCrypt.bytesToHex( mcrypt.encrypt(plaintext) );
+					String encrypted = mcrypt.get_iv() +
+									   MCrypt.bytesToHex( mcrypt.encrypt(plaintext) );
+					return encrypted;
 				}
 				catch (Exception e) {
 					e.printStackTrace();
+					Log.e("LongitudeUpdater", e.getMessage());
 				}
 			}
 			return "";
@@ -173,11 +169,16 @@ public class MCrypt {
 
 		public static String decrypt_text(Context context, String encrypted_text){
 			if (MCrypt.secret_key_is_valid(context)){
-				MCrypt mcrypt = new MCrypt(context, "fedcba9876543210");
+
 				try{
+					String iv = encrypted_text.substring(0,16);
+					encrypted_text = encrypted_text.substring(16);
+					MCrypt mcrypt = new MCrypt(context, iv);
+
 					return new String(mcrypt.decrypt(encrypted_text));
 				} catch(Exception e){
 					e.printStackTrace();
+					Log.e("LongitudeUpdater", e.getMessage());
 				}
 			}
 			return "";
