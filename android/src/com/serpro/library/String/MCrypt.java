@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -28,10 +29,28 @@ public class MCrypt {
 
 		public MCrypt(Context context, String iv) {
 			mContext = context;
-			String SecretKey = get_secret_key();
+			byte[] SecretKey = get_secret_key();
 
-			ivspec = new IvParameterSpec(iv.getBytes());
-			keyspec = new SecretKeySpec(SecretKey.getBytes(), "AES");
+			ivspec = new IvParameterSpec(MCrypt.hexToBytes(iv));
+			keyspec = new SecretKeySpec(SecretKey, "AES");
+
+			try {
+				cipher = Cipher.getInstance("AES/CBC/NoPadding");
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			} catch (NoSuchPaddingException e) {
+				e.printStackTrace();
+			}
+		}
+
+
+		public MCrypt(Context context) {
+			mContext = context;
+			byte[] SecretKey = get_secret_key();
+			byte[] iv = generate_iv();
+
+			ivspec = new IvParameterSpec(iv);
+			keyspec = new SecretKeySpec(SecretKey, "AES");
 
 			try {
 				cipher = Cipher.getInstance("AES/CBC/NoPadding");
@@ -132,7 +151,16 @@ public class MCrypt {
 		public static String encrypt_text(Context context, String plaintext){
 			if (MCrypt.secret_key_is_valid(context)){
 				MCrypt mcrypt = new MCrypt(context, "fedcba9876543210");
+
 				try {
+					MCrypt mcrypte = new MCrypt(context);
+					String encrypted = MCrypt.bytesToHex( mcrypte.encrypt(plaintext));
+					Log.d("LongitudeUpdater.Test", encrypted);
+					MCrypt mcrypt2 = new MCrypt(context, mcrypte.get_iv());
+					String decrypted = new String(mcrypt2.decrypt(encrypted));
+					Log.d("LongitudeUpdater.Test", decrypted);
+
+
 					return MCrypt.bytesToHex( mcrypt.encrypt(plaintext) );
 				}
 				catch (Exception e) {
@@ -156,9 +184,27 @@ public class MCrypt {
 		}
 
 
-		private String get_secret_key(){
+		private byte[] get_secret_key(){
 			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(mContext);
-			return settings.getString(SettingsActivity.PREF_KEY_SERVER_PASSWORD, "");
+			return settings.getString(SettingsActivity.PREF_KEY_SERVER_PASSWORD, "").getBytes();
+		}
+
+
+		private byte[] generate_iv(){
+			try{
+				SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+				byte[] iv = new byte[16];
+				sr.nextBytes(iv);
+				return iv;
+			} catch(NoSuchAlgorithmException e){
+				e.printStackTrace();
+			}
+			return new String("fedcba9876543210").getBytes();
+		}
+
+
+		public String get_iv(){
+			return MCrypt.bytesToHex(ivspec.getIV());
 		}
 
 
