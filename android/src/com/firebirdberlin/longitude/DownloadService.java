@@ -120,34 +120,37 @@ public class DownloadService extends Service {
 			Log.d(TAG, "Download finished.");
 
 			StringBuilder builder = new StringBuilder();
-	    	try{
-	    		StatusLine statusLine = response.getStatusLine();
-	    		int statusCode = statusLine.getStatusCode();
-	    		if(statusCode == 200){
-	    			HttpEntity entity = response.getEntity();
-	    			InputStream content = entity.getContent();
-	    			BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-	    			String line;
-	    			while((line = reader.readLine()) != null){
-	    				builder.append(line);
-	    			}
-	    		} else {
-	    			Log.e(TAG,"Failed reading JSON object");
-	    		}
-	    	}catch(ClientProtocolException e){
-	    		e.printStackTrace();
-	    	} catch (IOException e){
-	    		e.printStackTrace();
-	    	}
+			try{
+				StatusLine statusLine = response.getStatusLine();
+				int statusCode = statusLine.getStatusCode();
+				if(statusCode == 200){
+					HttpEntity entity = response.getEntity();
+					InputStream content = entity.getContent();
+					BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+					String line;
+					while((line = reader.readLine()) != null){
+						builder.append(line);
+					}
+				} else {
+					Log.e(TAG,"Failed reading JSON object");
+				}
+			}catch(ClientProtocolException e){
+				e.printStackTrace();
+				Log.e(TAG, e.getMessage());
+			} catch (IOException e){
+				e.printStackTrace();
+				Log.e(TAG, e.getMessage());
+			}
 
-	    	String json = builder.toString();
-	    	String data = "";
-	    	try{
-	        	JSONObject jsonObject = new JSONObject(json);
-	        	Log.d(TAG, jsonObject.getString("processing_time"));
-	        	data = jsonObject.getString("data");
+			String json = builder.toString();
+			String data = "";
+			try{
+				JSONObject jsonObject = new JSONObject(json);
+				Log.d(TAG, jsonObject.getString("processing_time"));
+				data = jsonObject.getString("data");
 			} catch(Exception e){
 				e.printStackTrace();
+				Log.e(TAG, e.getMessage());
 			}
 
 			String decrypted = MCrypt.decrypt_text(mContext, data);
@@ -157,8 +160,8 @@ public class DownloadService extends Service {
 	}
 
 	private static void sendMessageToActivity(Context context, String msg) {
-	    Intent intent = new Intent("FriendLocationUpdates");
-	    intent.putExtra("json", msg);
-	    context.sendBroadcast(intent);
+		Intent intent = new Intent("FriendLocationUpdates");
+		intent.putExtra("json", msg);
+		context.sendBroadcast(intent);
 	}
 }
