@@ -2,7 +2,7 @@ debug:
 	ant debug
 
 installdebug:
-	adb -d install -r bin/LongitudeUpdater-debug.apk
+	adb install -r bin/LongitudeUpdater-debug.apk
 
 clean:
 	ant clean
